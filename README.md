@@ -49,7 +49,116 @@ O sistema monitora a última ação de controle dos motores. Se nenhum comando f
 
 ## 📂 Código
 
-O código-fonte completo está no arquivo [grua_eletromagnetica.ino](./grua_eletromagnetica.ino).
+```cpp
+#include <SoftwareSerial.h>
+SoftwareSerial bluetooth(2, 3); // RX, TX
+
+// Motor A
+const int in1 = 4;
+const int in2 = 5;
+const int ena = 6;
+
+// Motor B
+const int in3 = 8;
+const int in4 = 9;
+const int enb = 10;
+
+// Motor C
+const int in5 = 7;
+const int in6 = 12;
+const int ena2 = 11;
+
+// Relé
+const int pinoRele = 13;
+
+// Velocidades
+int velocidadeA = 100;
+int velocidadeB = 100;
+int velocidadeC = 150;
+
+// Controle de parada automática
+unsigned long ultimaAcaoAB = 0;
+unsigned long ultimaAcaoC = 0;
+const unsigned long tempoLimite = 300;
+
+void setup() {
+  pinMode(in1, OUTPUT); pinMode(in2, OUTPUT); pinMode(ena, OUTPUT);
+  pinMode(in3, OUTPUT); pinMode(in4, OUTPUT); pinMode(enb, OUTPUT);
+  pinMode(in5, OUTPUT); pinMode(in6, OUTPUT); pinMode(ena2, OUTPUT);
+  pinMode(pinoRele, OUTPUT);
+  digitalWrite(pinoRele, LOW);
+  bluetooth.begin(9600);
+}
+
+void loop() {
+  if (bluetooth.available()) {
+    char comando = toupper(bluetooth.read());
+    switch (comando) {
+      case 'F': motorA_frente(); ultimaAcaoAB = millis(); break;
+      case 'B': motorA_re();     ultimaAcaoAB = millis(); break;
+      case 'G': motorB_frente(); ultimaAcaoAB = millis(); break;
+      case 'H': motorB_re();     ultimaAcaoAB = millis(); break;
+      case 'L': motorC_frente(); ultimaAcaoC = millis();  break;
+      case 'M': motorC_re();     ultimaAcaoC = millis();  break;
+      case 'R': digitalWrite(pinoRele, HIGH); break;
+      case 'S': digitalWrite(pinoRele, LOW);  break;
+    }
+  }
+
+  if (millis() - ultimaAcaoAB > tempoLimite) parar_AB();
+  if (millis() - ultimaAcaoC > tempoLimite)  motorC_parar();
+}
+
+// === Motor A ===
+void motorA_frente() {
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  analogWrite(ena, velocidadeA);
+}
+
+void motorA_re() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  analogWrite(ena, velocidadeA);
+}
+
+// === Motor B ===
+void motorB_frente() {
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  analogWrite(enb, velocidadeB);
+}
+
+void motorB_re() {
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  analogWrite(enb, velocidadeB);
+}
+
+// === Motor C ===
+void motorC_frente() {
+  digitalWrite(in5, HIGH);
+  digitalWrite(in6, LOW);
+  analogWrite(ena2, velocidadeC);
+}
+
+void motorC_re() {
+  digitalWrite(in5, LOW);
+  digitalWrite(in6, HIGH);
+  analogWrite(ena2, velocidadeC);
+}
+
+void motorC_parar() {
+  digitalWrite(in5, LOW);
+  digitalWrite(in6, LOW);
+  analogWrite(ena2, 0);
+}
+
+// === Parar motores A e B ===
+void parar_AB() {
+  digitalWrite(in1, LOW); digitalWrite(in2, LOW); analogWrite(ena, 0);
+  digitalWrite(in3, LOW); digitalWrite(in4, LOW); analogWrite(enb, 0);
+}
 
 ## 📸 Estrutura Física
 
