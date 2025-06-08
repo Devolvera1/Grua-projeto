@@ -72,14 +72,14 @@ const int ena2 = 11;
 const int pinoRele = 13;
 
 // Velocidades
-int velocidadeA = 100;
-int velocidadeB = 100;
-int velocidadeC = 150;
+int velocidadeA = 255;
+int velocidadeB = 255;
+int velocidadeC = 255;
 
 // Controle de parada automática
 unsigned long ultimaAcaoAB = 0;
 unsigned long ultimaAcaoC = 0;
-const unsigned long tempoLimite = 300;
+const unsigned long tempoLimite = 1000;
 
 void setup() {
   pinMode(in1, OUTPUT); pinMode(in2, OUTPUT); pinMode(ena, OUTPUT);
@@ -160,6 +160,7 @@ void parar_AB() {
   digitalWrite(in3, LOW); digitalWrite(in4, LOW); analogWrite(enb, 0);
 }
 
+```cpp
 ## 📸 Estrutura Física
 
 A estrutura foi construída com palitos de sorvete seguindo o princípio de treliça. Motores foram fixados em suportes de madeira. Todo o projeto foi feito sem uso de parafusos ou pregos, conforme regras estabelecidas.
