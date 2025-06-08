@@ -160,7 +160,7 @@ void parar_AB() {
   digitalWrite(in3, LOW); digitalWrite(in4, LOW); analogWrite(enb, 0);
 }
 
-```cpp
+```
 ## 📸 Estrutura Física
 
 A estrutura foi construída com palitos de sorvete seguindo o princípio de treliça. Motores foram fixados em suportes de madeira. Todo o projeto foi feito sem uso de parafusos ou pregos, conforme regras estabelecidas.
